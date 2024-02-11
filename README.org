@@ -1,5 +1,15 @@
 
 
 
-1. Put the .desktop file in /usr/share/applications/ or wherever your .desktop files are stored.
-2. Put 
+1. If you’re not using org-msg, write a new =xdg-email-new-message-func= which takes an alist containing any of the following keys: 'to 'cc 'bcc 'subject 'body 'attach and creates a new email message. See the function xdg-email-create-org-msg. 
+2. Put the emacs-mail.desktop file in /​usr/share/applications/ or wherever your .desktop files are stored.
+3. Tell xdg to use that .desktop file: =xdg-settings set default-url-scheme-handler mailto emacs-mail.desktop=
+4. Make sure it worked: ~xdg-mime query default 'x-scheme-handler/mailto'~
+5. If you have problems, try running =xdg-desktop-menu install emacs-mail.desktop=. Seemed like it worked once for me. Idk what it does. 
+6. Copy =emacs-xdg-email.sh= into your path and make it executable.
+7. Test it in your terminal: =$ emacs-xdg-email.sh mailto:myself?= should open a new email to myself. Be sure to include the question mark. 
+8. (require 'xdg-email) 
+9. configure whichever other programs that require it. For example, in thunar: edit -> configure custom action -> use the command: =emacs-xdg-email.sh mailto:?attach=%f=
+10. Now you can use mailto to send emails.
+
+
