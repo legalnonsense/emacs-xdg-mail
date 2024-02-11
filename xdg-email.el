@@ -13,19 +13,25 @@
 (require 'org-msg)
 (require 's)
 
+(defcustom xdg-email-new-message-func #'xdg-email-create-org-msg
+  "take an alist with 'to 'cc 'bcc 'subject 'body 'attach, etc.
+keys and create a new email. write a function to use your email
+client."
+
+;;; parse mailto links 
+
 (defun alist-append (key alist new-val &optional test-fn)
-  "append NEW-VAL to KEY in ALIST."  
+  "append NEW-VAL to KEY in ALIST."
+  ;; this isn't used by I was going to use it to be able to
+  ;; attach multiple file names but I don't think I'd ever
+  ;; use such a feature because dired. 
   (if-let ((val (alist-get key alist nil nil test-fn)))
       (setf (alist-get key alist nil nil test-fn)
 	    (append (ensure-list (alist-get key alist nil nil test-fn))
 		    (ensure-list new-val)))
     (setf (alist-get key alist nil nil #'test-fn)
 	  new-val)))
-
-(defcustom xdg-email-new-message-func #'xdg-email-create-org-msg
-  "take an alist with 'to 'cc 'bcc 'subject 'body 'attach, etc.
-keys and create a new email."
-
+  
 (defun xdg-email-parser (url)
   "parse a mailto url
 note this won't parse multiple filenames and the like.
@@ -44,10 +50,10 @@ use "
     ;; send it to mu4e
   (funcall xdg-email-new-message-func rest)))
 
-;;; create a new message
+;;; create a new message 
 
 (defun jrf/org-msg-add-to-field (field &optional no-complete)
-  "FIELD is 'to, 'cc, 'bcc"
+  "add to different fields in an email"
   (save-excursion
     (pcase field
       ('to (message-goto-to))
@@ -66,6 +72,7 @@ use "
       (completion-at-point))))
 
 (defmacro jrf/org-msg-generate-goto-funcs (places)
+  "create wrappers around the message-goto functions"
   `(progn 
      ,@(cl-loop for place in places
                 collect `(defun ,(intern
@@ -95,7 +102,6 @@ use "
 	 (string-remove-prefix "file://") 
 	 (org-msg-attach-attach)))
   (jrf/org-msg-goto-to))
-    
     
 (provide 'xdg-email)
 
