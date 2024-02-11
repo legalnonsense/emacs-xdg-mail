@@ -1,0 +1,5 @@
+
+
+
+1. Put the .desktop file in /usr/share/applications/ or wherever your .desktop files are stored.
+2. Put 
