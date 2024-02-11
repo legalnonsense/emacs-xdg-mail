@@ -13,7 +13,7 @@
 (require 'org-msg)
 (require 's)
 
-(defcustom xdg-email-new-message-func #'xdg-email-create-org-msg
+(defcustom xdg-email-new-message-func #'xdg-email-create-msg
   "take an alist with 'to 'cc 'bcc 'subject 'body 'attach, etc.
 keys and create a new email. write a function to use your email
 client."
@@ -52,50 +52,22 @@ use "
 
 ;;; create a new message 
 
-(defun jrf/org-msg-add-to-field (field &optional no-complete)
-  "add to different fields in an email"
-  (save-excursion
-    (pcase field
-      ('to (message-goto-to))
-      ('cc (message-goto-cc))
-      ('bcc (message-goto-bcc))
-      ('subject (message-goto-subject))
-      (_ (error
-          "Invalid valid for field: %s; must be 'to 'cc 'bcc or 'subject"
-          field)))
-    (unless (save-excursion
-              (backward-char 1)
-              (looking-at " "))
-      (insert ", "))
-    (if no-complete
-      (insert no-complete)
-      (completion-at-point))))
-
-(defmacro jrf/org-msg-generate-goto-funcs (places)
-  "create wrappers around the message-goto functions"
-  `(progn 
-     ,@(cl-loop for place in places
-                collect `(defun ,(intern
-                                  (concat "jrf/org-msg-goto-"
-                                          (symbol-name place)))
-                             (&optional no-complete)
-                           (interactive)
-                           (jrf/org-msg-add-to-field ',place no-complete)))))
-
-(jrf/org-msg-generate-goto-funcs (to cc bcc subject))
-
-(defun xdg-email-create-org-msg (args)
+(defun xdg-email-create-msg (args)
   "create a new email using org-msg"
   (interactive)
   (mu4e-compose-new)   
   (when-let ((to (alist-get 'to args)))
-      (jrf/org-msg-goto-to to))
+    (message-goto-to)
+    (insert to))
   (when-let ((cc (alist-get 'cc args)))
-    (jrf/org-msg-goto-cc cc))
+    (message-goto-cc)
+    (insert cc))
   (when-let ((bcc (alist-get 'bcc args)))
-    (jrf/org-msg-goto-bcc bcc))
+    (message-goto-bcc)
+    (insert bcc))
   (when-let ((subject (alist-get 'subject args)))
-    (jrf/org-msg-goto-subject subject))
+    (message-goto-subject)
+    (insert subject))
   (when-let ((attach (alist-get 'attach args)))
     (->> attach
 	 ;; thunar adds this garbage prefix 
