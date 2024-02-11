@@ -1,5 +1,5 @@
 #!/bin/bash
 
 
-emacsclient -eval '(jrf/xdg-email-parser "'$1'")'
+emacsclient -eval '(xdg-email-parser "'$1'")'
 
