@@ -1,15 +1,6 @@
-;; This buffer is for text that is not saved, and for Lisp evaluation.
-;; To create a file, visit it with C-x C-f and enter text in its buffer.
-
-;; thunar
-;; edit -> configure custom action
-;; do the obvious
-;; the command is: email-test.sh mailto:?attach=%f
-
-;; (jrf/xdg-email-parser "mailto:?attach=/home/jeff/Desktop/21-7-21%20SMF.pdf") ;;;TEST 
+;; -*- lexical-binding: t; -*-
 
 (require 'dash)
-(require 'mu4e)
 (require 'org-msg)
 (require 's)
 
@@ -20,14 +11,14 @@
   "function to attach a file to the current message buffer.  I use `org-msg'.
 Another possibility is `mml-attach-file'.")
 
-;;; parse mailto links 
-
 (defun xdg-email-parser (url)
   "parse a mailto url
 note this won't hanlde multple file names.
 ()
 It will return an alist based on the keys and values
-in the mailto url" 
+in the mailto url.
+
+This will err out if it does not like the url."
   (let* ((to (cons 'to (--> url
 			   (cadr (s-split ":" it))
 			   (car (s-split "?" it))
@@ -38,13 +29,11 @@ in the mailto url"
 				      (car (s-split "=" arg))))
 				     (url-unhex-string
 				      (cadr (s-split "=" arg)))))))
-    ;; (append (list to) rest)))
     (xdg-email-create-msg (append (list to) rest))))
 
-;;; create a new message 
-
 (defun xdg-email-create-msg (args)
-  "create a new email using org-msg"
+  "Create a new email message and populate the
+relevant fields."
   (interactive)
   (funcall xdg-email-new-message-func)
   (save-excursion 
@@ -65,7 +54,6 @@ in the mailto url"
 	 ;; thunar adds this garbage prefix 
 	 (string-remove-prefix "file://")
 	 (funcall xdg-email-attach-function)))))
-
     
 (provide 'xdg-email)
 
