@@ -19,12 +19,16 @@ It will return an alist based on the keys and values
 in the mailto url.
 
 This will err out if it does not like the url."
+  (setq xxx url)
+  (unless (s-starts-with-p "mailto:" url t)
+    (setq url (concat "mailto:" url)))
+  
   (let* ((to (cons 'to (--> (if (s-ends-with-p "?" url)
 				url
 			      (concat url "?"))  
-			   (cadr (s-split ":" it))
-			   (car (s-split "?" it))
-			   (url-unhex-string it))))
+			    (cadr (s-split ":" it))
+			    (car (s-split "?" it))
+			    (url-unhex-string it))))
 	 (rest (s-split "&" (or (cadr (s-split "?" url))
 				"")))
 	 (rest (cl-loop for arg in rest
