@@ -19,7 +19,6 @@ It will return an alist based on the keys and values
 in the mailto url.
 
 This will err out if it does not like the url."
-  (setq xxx url)
   (unless (s-starts-with-p "mailto:" url t)
     (setq url (concat "mailto:" url)))
   
