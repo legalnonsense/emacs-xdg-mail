@@ -6,14 +6,16 @@ For various reasons, I could not get the .desktop files that come with emacs to 
 2. a bash script that passes a mailto url to Emacs
 3. An emacs function that parses the url and opens a new email message
 
-Steps:    
+If followed, these steps will save you seconds per week:
 
 1. Put the emacs-mail.desktop file in /​usr/share/applications/ or wherever your .desktop files are stored.
 2. Tell xdg to use that .desktop file: =xdg-settings set default-url-scheme-handler mailto emacs-mail.desktop=
 3. Make sure it worked: ~xdg-mime query default 'x-scheme-handler/mailto'~
-4. If you have problems, try running =xdg-desktop-menu install emacs-mail.desktop=. Idk what it does but it seemed to force xdg to refresh the desktop file.)
+4. If you have problems with xdg recognizing the changes and still using the old emacs-mail.desktop file, try running =xdg-desktop-menu install emacs-mail.desktop=. I don't know what it does but it seemed to force xdg to refresh.)
 5. Copy =emacs-xdg-email.sh= into your path and make it executable.
-6. Test it in your terminal: =$ emacs-xdg-email.sh mailto:myself?= should open a new blank email to myself. 
-7. Configure any other programs that require it. For example, in thunar: edit -> configure custom action. Create a new action that uses the command: =emacs-xdg-email.sh mailto:?attach=%f=
-8. Now you can use mailto to send emails from places like your file manage and libreoffice, saving you valuable seconds. 
+6. Make sure you =(server-start)= in Emacs as the script uses emacsclient. If you don't want to use emacsclient then edit the bash file accordingly. 
+7. Test it in your terminal: =$ emacs-xdg-email.sh mailto:myself?= should open a new email.
+8. Configure any other programs that you want to be able to send email from. For example, in thunar: edit -> configure custom action. Create a new action that uses the command: =emacs-xdg-email.sh mailto:?attach=%f=. This allows you to open an new email with a file attached by right clicking on it. Other programs, like Libreoffice, should work automatically (File -> Send -> Email document).
+
+
 
