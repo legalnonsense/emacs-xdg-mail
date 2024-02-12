@@ -14,21 +14,24 @@ Another possibility is `mml-attach-file'.")
 (defun xdg-email-parser (url)
   "parse a mailto url
 note this won't hanlde multple file names.
-()
+
 It will return an alist based on the keys and values
 in the mailto url.
 
 This will err out if it does not like the url."
-  (let* ((to (cons 'to (--> url
+  (let* ((to (cons 'to (--> (if (s-ends-with-p "?" url)
+				url
+			      (concat url "?"))  
 			   (cadr (s-split ":" it))
 			   (car (s-split "?" it))
 			   (url-unhex-string it))))
-	(rest (s-split "&" (cadr (s-split "?" url))))
-	(rest (cl-loop for arg in rest
-		       collect (cons (intern (url-unhex-string
-				      (car (s-split "=" arg))))
-				     (url-unhex-string
-				      (cadr (s-split "=" arg)))))))
+	 (rest (s-split "&" (or (cadr (s-split "?" url))
+				"")))
+	 (rest (cl-loop for arg in rest
+			collect (cons (intern (url-unhex-string
+					       (car (s-split "=" arg))))
+				      (url-unhex-string
+				       (cadr (s-split "=" arg)))))))
     (xdg-email-create-msg (append (list to) rest))))
 
 (defun xdg-email-create-msg (args)
