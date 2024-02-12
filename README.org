@@ -8,7 +8,7 @@ For various reasons, I could not get the .desktop files that come with emacs to 
 
 If followed, these steps will save you seconds per week:
 
-1. Put the emacs-mail.desktop file in /​usr/share/applications/ or wherever your .desktop files are stored.
+1. Copy the =emacs-mail.desktop= file to =/​usr/share/applications/= or wherever your .desktop files are stored.
 2. Tell xdg to use that .desktop file: =xdg-settings set default-url-scheme-handler mailto emacs-mail.desktop=
 3. Make sure it worked: ~xdg-mime query default 'x-scheme-handler/mailto'~
 4. If you have problems with xdg recognizing the changes and still using the old emacs-mail.desktop file, try running =xdg-desktop-menu install emacs-mail.desktop=. I don't know what it does but it seemed to force xdg to refresh.)

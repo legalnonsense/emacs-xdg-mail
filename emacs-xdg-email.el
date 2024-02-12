@@ -55,7 +55,7 @@ relevant fields."
 	 (string-remove-prefix "file://")
 	 (funcall xdg-email-attach-function)))))
     
-(provide 'xdg-email)
+(provide 'emacs-xdg-email)
 
 
 
