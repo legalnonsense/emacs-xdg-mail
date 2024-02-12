@@ -13,30 +13,21 @@
 (require 'org-msg)
 (require 's)
 
-(defcustom xdg-email-new-message-func #'xdg-email-create-msg
-  "take an alist with 'to 'cc 'bcc 'subject 'body 'attach, etc.
-keys and create a new email. write a function to use your email
-client."
+(defcustom xdg-email-new-message-func #'compose-mail
+  "Function to open new message buffer.")
+
+(defcustom xdg-email-attach-function #'org-msg-attach-attach
+  "function to attach a file to the current message buffer.  I use `org-msg'.
+Another possibility is `mml-attach-file'.")
 
 ;;; parse mailto links 
 
-(defun alist-append (key alist new-val &optional test-fn)
-  "append NEW-VAL to KEY in ALIST."
-  ;; this isn't used by I was going to use it to be able to
-  ;; attach multiple file names but I don't think I'd ever
-  ;; use such a feature because dired. 
-  (if-let ((val (alist-get key alist nil nil test-fn)))
-      (setf (alist-get key alist nil nil test-fn)
-	    (append (ensure-list (alist-get key alist nil nil test-fn))
-		    (ensure-list new-val)))
-    (setf (alist-get key alist nil nil #'test-fn)
-	  new-val)))
-  
 (defun xdg-email-parser (url)
   "parse a mailto url
-note this won't parse multiple filenames and the like.
-
-use "
+note this won't hanlde multple file names.
+()
+It will return an alist based on the keys and values
+in the mailto url" 
   (let* ((to (cons 'to (--> url
 			   (cadr (s-split ":" it))
 			   (car (s-split "?" it))
@@ -47,15 +38,16 @@ use "
 				      (car (s-split "=" arg))))
 				     (url-unhex-string
 				      (cadr (s-split "=" arg)))))))
-    ;; send it to mu4e
-  (funcall xdg-email-new-message-func rest)))
+    ;; (append (list to) rest)))
+    (xdg-email-create-msg (append (list to) rest))))
 
 ;;; create a new message 
 
 (defun xdg-email-create-msg (args)
   "create a new email using org-msg"
   (interactive)
-  (mu4e-compose-new)   
+  (funcall xdg-email-new-message-func)
+  (save-excursion 
   (when-let ((to (alist-get 'to args)))
     (message-goto-to)
     (insert to))
@@ -71,9 +63,9 @@ use "
   (when-let ((attach (alist-get 'attach args)))
     (->> attach
 	 ;; thunar adds this garbage prefix 
-	 (string-remove-prefix "file://") 
-	 (org-msg-attach-attach)))
-  (jrf/org-msg-goto-to))
+	 (string-remove-prefix "file://")
+	 (funcall xdg-email-attach-function)))))
+
     
 (provide 'xdg-email)
 
